@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { error } from 'console';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { NotFoundException } from '@nestjs/common';
 
 @Injectable()
 export class UsersService {
@@ -42,13 +43,16 @@ export class UsersService {
 
     findAll(role?:'Intern'|'SEO' | 'ASE'| 'Admin'){
         if(role){
-            return this.users.filter(users => users.role === role)
+            const rolesArray = this.users.filter(users => users.role === role)
+            if(rolesArray.length===0) throw new NotFoundException('User Role not found')
         }
         return this.users
     }
 
     findOne(id: number){
         const user = this.users.find(user => user.id === id)
+
+        if(!user) throw new NotFoundException('User Not Found')
         return user
     }
 
